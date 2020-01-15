@@ -6,8 +6,10 @@ import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -25,8 +27,12 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+    private List<String> arrayMapList = new ArrayList<>();
     private RequestQueue requestQueue;
     private AppCompatAutoCompleteTextView autoTextView;
+    private static final String[] COUNTRIES = new String[] {
+            "Belgium", "France", "Italy", "Germany", "Spain"
+    };
 
     EditText mOrigin;
     Button tbutton;
@@ -34,28 +40,23 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ArrayMapList aMap = new ArrayMapList();
-        autoTextView = (AppCompatAutoCompleteTextView)findViewById(R.id.mOrigin);
         setContentView(R.layout.activity_main);
+
         mOrigin = findViewById(R.id.mOrigin);
         requestQueue = Volley.newRequestQueue(this);
         getDestinationId();
-        setDestinationList(aMap);
-    }
-
-    private void setDestinationList(ArrayMapList aMap){
-        List<String> mlist = new ArrayList<>();
-        mlist.add(aMap.getDestination());
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.select_dialog_item,mlist);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.activity_list_item,arrayMapList);
+        autoTextView = (AppCompatAutoCompleteTextView) findViewById(R.id.mOrigin);
         autoTextView.setThreshold(1);
         autoTextView.setAdapter(adapter);
     }
 
+
+
     private void getDestinationId(){
-        RequestQueue queue = Volley.newRequestQueue(this);
         System.out.println("GetIDDestinasi");
         String url ="https://maps.googleapis.com/maps/api/place/autocomplete/json?";
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url+"&input="+mOrigin.getText()+"&key="+R.string.Api, null,
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url+"&input="+"sunplaza"+"&key="+R.string.Api, null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -67,12 +68,11 @@ public class MainActivity extends AppCompatActivity {
                                 System.out.println(" id "+jsonObject.getString("id"));
                                 aMap.setDestination(jsonObject.getString("description"));
                                 aMap.setIdDestination(jsonObject.getString("id"));
-
+                                arrayMapList.add(aMap);
                             }
                         }catch (JSONException e){
                             e.printStackTrace();
                         }
-
                     }
                 },
                 new Response.ErrorListener() {
@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
                         error.printStackTrace();
                     }
                 });
-        queue.add(request);
+        requestQueue.add(request);
     }
 }
 
