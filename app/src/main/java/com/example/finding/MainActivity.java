@@ -55,7 +55,6 @@ public class MainActivity extends AppCompatActivity {
         RequestQueue queue = Volley.newRequestQueue(this);
         System.out.println("GetIDDestinasi");
         String url ="https://maps.googleapis.com/maps/api/place/autocomplete/json?";
-        System.out.println(url+"&input="+"sunPlaza medan"+"&key="+"AIzaSyBT-M_q9mFlTTCM47VVz1X2mQ9O3PefW4Q");
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url+"&input="+mOrigin.getText()+"&key="+R.string.Api, null,
                 new Response.Listener<JSONObject>() {
                     @Override
