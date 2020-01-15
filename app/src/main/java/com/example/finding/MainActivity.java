@@ -11,6 +11,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -35,16 +36,6 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private List<String> arrayMapList = new ArrayList<>();
-    private RequestQueue requestQueue;
-    private AppCompatAutoCompleteTextView autoTextView;
-    private static final String[] COUNTRIES = new String[] {
-            "Belgium", "France", "Italy", "Germany", "Spain"
-    };
-
-    EditText mOrigin;
-    Button tbutton;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,13 +44,31 @@ public class MainActivity extends AppCompatActivity {
         if (!Places.isInitialized()) {
             Places.initialize(getApplicationContext(), apiKey);
         }
+        //Orgin
+        PlacesClient OriginClient = Places.createClient(this);
+        AutocompleteSupportFragment mOrigin = (AutocompleteSupportFragment)
+                getSupportFragmentManager().findFragmentById(R.id.mOrigin);
 
-        PlacesClient placesClient = Places.createClient(this);
+        mOrigin.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
+        mOrigin.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(Place place) {
+                // TODO: Get info about the selected place.
+                System.out.println("Place: " + place.getName() + ", " + place.getId());
+            }
+
+            @Override
+            public void onError(Status status) {
+                // TODO: Handle the error.
+                System.out.println("An error occurred: " + status);
+            }
+        });
+        //FirstDestination
+        PlacesClient FirstDestinationClient = Places.createClient(this);
         AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
-                getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+                getSupportFragmentManager().findFragmentById(R.id.mFirstDestination);
 
         autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
-
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
@@ -73,37 +82,10 @@ public class MainActivity extends AppCompatActivity {
                 System.out.println("An error occurred: " + status);
             }
         });
+
+
     }
 
-    private void getDestinationId(){
-        System.out.println("GetIDDestinasi");
-        String url ="https://maps.googleapis.com/maps/api/place/autocomplete/json?";
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url+"&input="+"sunplaza"+"&key="+R.string.Api, null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try{
-                            JSONArray jsonArray = response.getJSONArray("predictions");
-                            for (int i = 0; i < jsonArray.length(); i++){
-                                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                                ArrayMapList aMap = new ArrayMapList();
-                                System.out.println(" id "+jsonObject.getString("id"));
-                                aMap.setDestination(jsonObject.getString("description"));
-                                aMap.setIdDestination(jsonObject.getString("id"));
-                            }
-                        }catch (JSONException e){
-                            e.printStackTrace();
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        error.printStackTrace();
-                    }
-                });
-        requestQueue.add(request);
-    }
 }
 
 
