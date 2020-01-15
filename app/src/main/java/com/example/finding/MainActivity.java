@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -17,12 +18,19 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.common.api.Status;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -41,17 +49,31 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        String apiKey = getString(R.string.Api);
+        if (!Places.isInitialized()) {
+            Places.initialize(getApplicationContext(), apiKey);
+        }
 
-        mOrigin = findViewById(R.id.mOrigin);
-        requestQueue = Volley.newRequestQueue(this);
-        getDestinationId();
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.activity_list_item,arrayMapList);
-        autoTextView = (AppCompatAutoCompleteTextView) findViewById(R.id.mOrigin);
-        autoTextView.setThreshold(1);
-        autoTextView.setAdapter(adapter);
+        PlacesClient placesClient = Places.createClient(this);
+        AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
+                getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+
+        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
+
+        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(Place place) {
+                // TODO: Get info about the selected place.
+                System.out.println("Place: " + place.getName() + ", " + place.getId());
+            }
+
+            @Override
+            public void onError(Status status) {
+                // TODO: Handle the error.
+                System.out.println("An error occurred: " + status);
+            }
+        });
     }
-
-
 
     private void getDestinationId(){
         System.out.println("GetIDDestinasi");
@@ -68,7 +90,6 @@ public class MainActivity extends AppCompatActivity {
                                 System.out.println(" id "+jsonObject.getString("id"));
                                 aMap.setDestination(jsonObject.getString("description"));
                                 aMap.setIdDestination(jsonObject.getString("id"));
-                                arrayMapList.add(aMap);
                             }
                         }catch (JSONException e){
                             e.printStackTrace();
