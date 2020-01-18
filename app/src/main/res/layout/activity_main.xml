@@ -19,35 +19,5 @@
         app:layout_constraintTop_toBottomOf="@id/mOrigin"
         android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
         />
-    <fragment android:id="@+id/mSecondDestination"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        app:layout_constraintTop_toBottomOf="@id/mFirstDestination"
-        android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
-        />
-    <fragment android:id="@+id/mThirdestination"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        app:layout_constraintTop_toBottomOf="@id/mSecondDestination"
-        android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
-        />
-    <fragment android:id="@+id/mFinalDestination"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        app:layout_constraintTop_toBottomOf="@id/mThirdestination"
-        android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
-        />
-    <Button
-        android:layout_width="wrap_content"
-        android:id="@+id/mFInding"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        app:layout_constraintTop_toBottomOf="@+id/mFinalDestination"
-        android:text="Sort"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
